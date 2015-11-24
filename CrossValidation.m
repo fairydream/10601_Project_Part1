@@ -1,12 +1,11 @@
 function score = CrossValidation(pcX0, pcX1, pcX3, Y0, Y1, Y3, C, sigma)
-    k = 5;
-    indices0 = crossvalind('Kfold', size(pcX0, 1), k);
-    indices1 = crossvalind('Kfold', size(pcX1, 1), k);
-    indices3 = crossvalind('Kfold', size(pcX3, 1), k);
-    
     tot_score = 0;
     N_trial = 3;
     for j = 1:N_trial
+        k = 10;
+        indices0 = crossvalind('Kfold', size(pcX0, 1), k);
+        indices1 = crossvalind('Kfold', size(pcX1, 1), k);
+        indices3 = crossvalind('Kfold', size(pcX3, 1), k);
         for i = 1:k
             %% generate train & test data
             i_pcX0 = pcX0(indices0~=i, :);

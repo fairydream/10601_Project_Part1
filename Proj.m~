@@ -33,7 +33,7 @@ function testResult = Proj()
 %     pcX1 = cenX1*baseF;
 %     pcX3 = cenX3*baseF;
    
-%     load('pca_500.mat');
+    %load('pca_500.mat');
     
     %% lda
     Xall = [Xtrain;Xtest];
@@ -93,10 +93,10 @@ function testResult = Proj()
 %         fprintf('pc num: %d, score %d \n', i_pc, score);
 %     end
 
-    for i_pc = 2:2
-        score = CrossValidation(pcX0(:, 1:i_pc), pcX1(:, 1:i_pc), pcX3(:, 1:i_pc), Y0, Y1, Y3, 50, 100);
-        fprintf('pc num: %d, score %d \n', i_pc, score);
-    end
+%     for i_pc = 2:2
+%         score = CrossValidation(pcX0(:, 1:i_pc), pcX1(:, 1:i_pc), pcX3(:, 1:i_pc), Y0, Y1, Y3, 50, 100);
+%         fprintf('pc num: %d, score %d \n', i_pc, score);
+%     end
 
         
 
