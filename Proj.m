@@ -55,7 +55,7 @@ function testResult = Proj()
     %% pca + lda
     load('pca_500.mat');
     
-    pcNum = 75;
+    pcNum = 91;
     
     cenXtrain = Xtrain - ones(size(Xtrain,1),1) * mean_p';  
     pcXtrain = cenXtrain*coeff(:, 1:pcNum);
@@ -160,12 +160,23 @@ function testResult = Proj()
 % %     dlmwrite('prediction.csv', testResult,'precision','%.8f');
 % 
 %     
-    % One-vs-One
-    C = 50;
-    sigma = 100;
-    pcXtest = (Xtest- ones(size(Xtest,1),1) * mean_p')*coeff(:, 1:pcNum)*eigvector;
-    testResult = One_One_SVM(pcX0, pcX1, pcX3, Y0, Y1, Y3, pcXtest, C, sigma);
-    dlmwrite('prediction.csv', testResult,'precision','%.8f');
+%     % One-vs-One
+%     C = 40;
+%     sigma = 159;
+%     pcXtest = (Xtest- ones(size(Xtest,1),1) * mean_p')*coeff(:, 1:pcNum)*eigvector;
+%     testResult = One_One_SVM(pcX0, pcX1, pcX3, Y0, Y1, Y3, pcXtest, C, sigma);
+%     dlmwrite('prediction.csv', testResult,'precision','%.8f');
+%
+      % One-vs-One
+      C01 = 0.0100;
+      gamma01 = 0.0828;
+      C13 = 0.0562;
+      gamma13 = 0.0177;
+      C03 = 0.3162;
+      gamma03 = 0.0134;
+      pcXtest = (Xtest- ones(size(Xtest,1),1) * mean_p')*coeff(:, 1:pcNum)*eigvector;
+      testResult = One_One_SSVM(pcX0, pcX1, pcX3, Y0, Y1, Y3, pcXtest, C01, gamma01, C13, gamma13, C03, gamma03);
+      dlmwrite('prediction.csv', testResult,'precision','%.8f');
 %       
 %     % mn logistic
 %     testResult = MNRfit(pcX0, pcX1, pcX3, Y0, Y1, Y3, pcXtest);
