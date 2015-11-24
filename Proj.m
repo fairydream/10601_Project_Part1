@@ -36,21 +36,64 @@ function testResult = Proj()
 %     load('pca_500.mat');
     
     %% lda
-    Xall = [Xtrain;Xtest];
-    mean_p = Xall' * ones(size(Xall,1),1) / size(Xall, 1);  % p-1
+%     Xall = [Xtrain;Xtest];
+%     mean_p = Xall' * ones(size(Xall,1),1) / size(Xall, 1);  % p-1
+%     cenXtrain = Xtrain - ones(size(Xtrain,1),1) * mean_p';  
+%     options = [];
+%     options.Fisherface = 1;
+%     [eigvector, eigvalue, elapse] = LDA(Ytrain,options,cenXtrain);
+%     
+%     cenX0 = X0 - ones(size(X0,1),1) * mean_p';
+%     cenX1 = X1 - ones(size(X1,1),1) * mean_p';
+%     cenX3 = X3 - ones(size(X3,1),1) * mean_p';
+%     
+%   
+%     pcX0 = cenX0*eigvector;
+%     pcX1 = cenX1*eigvector;
+%     pcX3 = cenX3*eigvector;
+
+    %% pca + lda
+    load('pca_500.mat');
+    
+    pcNum = 75;
+    
     cenXtrain = Xtrain - ones(size(Xtrain,1),1) * mean_p';  
+    pcXtrain = cenXtrain*coeff(:, 1:pcNum);
     options = [];
     options.Fisherface = 1;
-    [eigvector, eigvalue, elapse] = LDA(Ytrain,options,cenXtrain);
+    [eigvector, eigvalue, elapse] = LDA(Ytrain,options,pcXtrain);
     
     cenX0 = X0 - ones(size(X0,1),1) * mean_p';
     cenX1 = X1 - ones(size(X1,1),1) * mean_p';
     cenX3 = X3 - ones(size(X3,1),1) * mean_p';
     
   
-    pcX0 = cenX0*eigvector;
-    pcX1 = cenX1*eigvector;
-    pcX3 = cenX3*eigvector;
+    pcX0 = cenX0*coeff(:, 1:pcNum)*eigvector;
+    pcX1 = cenX1*coeff(:, 1:pcNum)*eigvector;
+    pcX3 = cenX3*coeff(:, 1:pcNum)*eigvector;
+    
+    % k-fold cv for pca+lda
+%     cenXtrain = Xtrain - ones(size(Xtrain,1),1) * mean_p';  
+%     
+%     score = [];
+%     for i_pc = 100:5:120    
+%         pcXtrain = cenXtrain*coeff(:, 1:i_pc);
+%         options = [];
+%         options.Fisherface = 1;
+%         [eigvector, eigvalue, elapse] = LDA(Ytrain,options,pcXtrain);
+% 
+%         cenX0 = X0 - ones(size(X0,1),1) * mean_p';
+%         cenX1 = X1 - ones(size(X1,1),1) * mean_p';
+%         cenX3 = X3 - ones(size(X3,1),1) * mean_p';
+%         
+%         pcX0 = cenX0*coeff(:, 1:i_pc)*eigvector;
+%         pcX1 = cenX1*coeff(:, 1:i_pc)*eigvector;
+%         pcX3 = cenX3*coeff(:, 1:i_pc)*eigvector;
+%         
+%         score = [score;i_pc, CrossValidation(pcX0, pcX1, pcX3, Y0, Y1, Y3, 50, 100)];
+%      %   fprintf('pc num: %d, score %d \n', i_pc, score);
+%     end
+%     score
 
     %% k-fold cross validation
     
@@ -93,10 +136,10 @@ function testResult = Proj()
 %         fprintf('pc num: %d, score %d \n', i_pc, score);
 %     end
 
-    for i_pc = 2:2
-        score = CrossValidation(pcX0(:, 1:i_pc), pcX1(:, 1:i_pc), pcX3(:, 1:i_pc), Y0, Y1, Y3, 50, 100);
-        fprintf('pc num: %d, score %d \n', i_pc, score);
-    end
+%     for i_pc = 2:2
+%         score = CrossValidation(pcX0(:, 1:i_pc), pcX1(:, 1:i_pc), pcX3(:, 1:i_pc), Y0, Y1, Y3, 50, 100);
+%         fprintf('pc num: %d, score %d \n', i_pc, score);
+%     end
 
         
 
@@ -117,12 +160,12 @@ function testResult = Proj()
 % %     dlmwrite('prediction.csv', testResult,'precision','%.8f');
 % 
 %     
-%     % One-vs-One
-%     C = 50;
-%     sigma = 100;
-%     pcXtest = (Xtest- ones(size(Xtest,1),1) * mean_p')*eigvector;
-%     testResult = One_One_SVM(pcX0, pcX1, pcX3, Y0, Y1, Y3, pcXtest, C, sigma);
-%     dlmwrite('prediction.csv', testResult,'precision','%.8f');
+    % One-vs-One
+    C = 50;
+    sigma = 100;
+    pcXtest = (Xtest- ones(size(Xtest,1),1) * mean_p')*coeff(:, 1:pcNum)*eigvector;
+    testResult = One_One_SVM(pcX0, pcX1, pcX3, Y0, Y1, Y3, pcXtest, C, sigma);
+    dlmwrite('prediction.csv', testResult,'precision','%.8f');
 %       
 %     % mn logistic
 %     testResult = MNRfit(pcX0, pcX1, pcX3, Y0, Y1, Y3, pcXtest);
